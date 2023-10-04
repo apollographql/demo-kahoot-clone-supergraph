@@ -1,0 +1,10 @@
+federation_version: =2.4.0
+subgraphs:
+  quiz:
+    routing_url: http://localhost:4005
+    schema:
+      file: ./quiz_schema.graphql
+  player:
+    routing_url: http://localhost:4006
+    schema:
+      file: ./player_schema.graphql

@@ -1,0 +1,35 @@
+cors:
+  allow_any_origin: true
+
+health_check:
+  listen: "127.0.0.1:8088"
+  enabled: false
+
+supergraph:
+  # The socket address and port to listen on
+  # Required for Heroku
+  # In DEV environment, uncomment this config
+  listen: "0.0.0.0:${env.PORT}"
+  path: /
+  defer_support: true
+  introspection: true
+subscription:
+  enabled: true
+  mode:
+    passthrough:
+      all:
+        path: /ws
+headers:
+  all:
+    request:
+      - propagate:
+          named: "player"
+
+include_subgraph_errors:
+  all: true
+
+telemetry:
+  experimental_logging:
+    format: pretty
+    display_filename: true
+    display_line_number: true

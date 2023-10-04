@@ -1,0 +1,83 @@
+extend schema
+  @link(
+    url: "https://specs.apollo.dev/federation/v2.4"
+    import: [
+      "@key"
+      "@extends"
+      "@shareable"
+      "@inaccessible"
+      "@override"
+      "@external"
+      "@provides"
+      "@requires"
+      "@tag"
+      "@composeDirective"
+      "@interfaceObject"
+    ]
+  )
+
+type Mutation {
+  "For an user who answers to a question in a quiz"
+  answer(quizId: ID!, questionId: ID!, choiceId: ID): Response!
+  "For admin to trigger the next question"
+  nextQuestion(quizId: ID!): Question
+}
+
+type Query {
+  """
+  Get the list of all available quizzes
+  """
+  allQuizzes: [Quiz!]!
+  """
+  Get the leaderboard for a quiz
+  """
+  leaderboardForQuiz(id: ID!): Leaderboard
+}
+
+type Subscription {
+  "Listens for changes in what question to show now for a quiz"
+  newQuestion(quizId: ID!): Question!
+  """
+  Listens the leaderboard for a quiz
+  """
+  leaderboardForQuiz(id: ID!): Leaderboard!
+}
+
+type Question @key(fields: "id") {
+  id: ID!
+  title: String!
+  choices: [Choice!]!
+}
+
+type Response {
+  """
+  Was it the right answer
+  """
+  success: Boolean!
+  """
+  What was the right choice
+  """
+  rightChoice: Choice!
+}
+
+type Choice {
+  id: ID!
+  text: String!
+}
+
+type Leaderboard {
+  quiz: Quiz!
+  list: [Player!]!
+}
+
+type Quiz @key(fields: "id") {
+  id: ID!
+  title: String!
+  questions: [Question!]!
+}
+
+type Player @key(fields: "id quizId") {
+  id: ID!
+  quizId: ID!
+  points: Int
+}

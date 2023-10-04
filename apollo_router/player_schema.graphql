@@ -1,0 +1,48 @@
+extend schema
+  @link(
+    url: "https://specs.apollo.dev/federation/v2.4"
+    import: [
+      "@key"
+      "@extends"
+      "@shareable"
+      "@inaccessible"
+      "@override"
+      "@external"
+      "@provides"
+      "@requires"
+      "@tag"
+      "@composeDirective"
+      "@interfaceObject"
+    ]
+  )
+
+type Query {
+  """
+  Get the data for a specific player
+  """
+  player(playerId: ID!): Player
+  """
+  Get the list of all players for a quiz (to know how much players we have for that quiz)
+  """
+  playersForAQuiz(quizId: ID!): [Player!]!
+}
+
+type Subscription {
+  """
+  Listen to the list of all players for a quiz (to know how much players we have for that quiz)
+  """
+  playersForAQuiz(quizId: ID!): [Player!]!
+}
+
+type Mutation {
+  """
+  Join a quiz with a username
+  """
+  createPlayer(userName: String!, quizId: ID!): Player
+}
+
+type Player @key(fields: "id quizId") {
+  id: ID!
+  name: String!
+  quizId: ID!
+}
