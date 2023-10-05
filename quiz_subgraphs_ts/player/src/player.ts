@@ -12,9 +12,10 @@ import { useServer } from "graphql-ws/lib/use/ws";
 import gql from "graphql-tag";
 import { readFileSync } from "fs";
 import { PubSub } from "graphql-subscriptions";
+import crypto from "crypto";
 
 function uuid() {
-  return Math.random().toString(36).substring(2, 9);
+  return crypto.randomBytes(6).toString("hex");
 }
 
 interface Player {
@@ -27,7 +28,7 @@ const pubsub = new PubSub();
 
 const PLAYERS: Record<string, Player> = {};
 
-const typeDefs = gql(readFileSync("./player.graphql", { encoding: "utf-8" }));
+const typeDefs = gql(readFileSync("./player.graphql", "utf-8"));
 
 function playersForAQuiz(quizId: string) {
   return Object.values(PLAYERS).filter((player) => player.quizId === quizId);
@@ -44,18 +45,18 @@ const resolvers = {
   },
 
   Query: {
-    player(_: any, { playerId }: { playerId: string }) {
+    player(_: undefined, { playerId }: { playerId: string }) {
       return PLAYERS[playerId];
     },
 
-    playersForAQuiz(_: any, { quizId }: { quizId: string }) {
+    playersForAQuiz(_: undefined, { quizId }: { quizId: string }) {
       return playersForAQuiz(quizId);
     },
   },
 
   Mutation: {
     createPlayer(
-      _: any,
+      _: undefined,
       { userName, quizId }: { userName: string; quizId: string }
     ): Player {
       const player: Player = {

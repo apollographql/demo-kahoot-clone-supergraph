@@ -48,6 +48,10 @@ interface Response {
   rightChoice: Choice;
 }
 
+type ContextValue = {
+  playerId: string | undefined;
+};
+
 const pubsub = new PubSub();
 
 const QUIZZES: Record<string, Quiz> = {
@@ -130,7 +134,7 @@ function getLeaderboard(quizId: string): Leaderboard {
   return leaderboard;
 }
 
-const typeDefs = gql(readFileSync("./quiz.graphql", { encoding: "utf-8" }));
+const typeDefs = gql(readFileSync("./quiz.graphql", "utf-8"));
 
 const resolvers = {
   Quiz: {
@@ -144,20 +148,20 @@ const resolvers = {
       return Object.values(QUIZZES);
     },
 
-    leaderboardForQuiz(_: any, { id }: { id: string }) {
+    leaderboardForQuiz(_: undefined, { id }: { id: string }) {
       return getLeaderboard(id);
     },
   },
 
   Mutation: {
     answer(
-      _: any,
+      _: undefined,
       {
         quizId,
         questionId,
         choiceId,
       }: { quizId: string; questionId: string; choiceId: string },
-      { playerId }: any
+      { playerId }: ContextValue
     ): Response {
       if (!playerId) {
         throw new Error("cannot find the player header");
@@ -197,7 +201,7 @@ const resolvers = {
       };
     },
 
-    nextQuestion(_: any, { quizId }: { quizId: string }) {
+    nextQuestion(_: undefined, { quizId }: { quizId: string }) {
       let question: Question | undefined;
       const quiz = QUIZZES[quizId];
 
@@ -243,14 +247,14 @@ const resolvers = {
 const app = express();
 const httpServer = createServer(app);
 
-const schema = buildSubgraphSchema({ typeDefs, resolvers });
+const schema = buildSubgraphSchema({ typeDefs, resolvers } as any);
 const wsServer = new WebSocketServer({
   server: httpServer,
   path: "/ws",
 });
 const serverCleanup = useServer({ schema }, wsServer);
 
-const server = new ApolloServer({
+const server = new ApolloServer<ContextValue>({
   schema,
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -275,7 +279,7 @@ app.use(
     async context({ req }) {
       return {
         playerId: req.headers.player,
-      };
+      } as ContextValue;
     },
   })
 );
