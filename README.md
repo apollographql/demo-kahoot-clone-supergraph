@@ -25,11 +25,11 @@ You will need:
 
 1. Navigate to the `quiz` folder.
 
-1. Run `npm i`, then `npm run watch`. This will run the quiz subgraph on port 4005.
+1. Run `npm i`, then `npm run dev`. This will run the quiz subgraph on port 4005.
 
 1. Navigate to the `quiz_subgraphs_ts/player` folder.
 
-1. Run `npm i` then `npm run watch`. This will run the player subgraph on port 4006.
+1. Run `npm i` then `npm run dev`. This will run the player subgraph on port 4006.
 
 #### Rust
 
