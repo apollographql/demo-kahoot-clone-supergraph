@@ -58,6 +58,12 @@ const resolvers = {
     },
   },
 
+  Player: {
+    __resolveReference(reference: Player) {
+      // TODO
+    },
+  },
+
   Query: {},
 };
 
