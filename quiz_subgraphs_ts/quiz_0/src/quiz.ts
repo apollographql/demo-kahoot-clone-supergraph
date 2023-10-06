@@ -37,6 +37,10 @@ interface Response {
   // TODO
 }
 
+type ContextValue = {
+  playerId: string | undefined;
+};
+
 const pubsub = new PubSub();
 
 const QUIZZES: Record<string, Quiz> = {
@@ -49,7 +53,7 @@ function getLeaderboard(quizId: string): Leaderboard {
   return {};
 }
 
-const typeDefs = gql(readFileSync("./quiz.graphql", { encoding: "utf-8" }));
+const typeDefs = gql(readFileSync("./quiz.graphql", "utf-8"));
 
 const resolvers = {
   Quiz: {
@@ -70,14 +74,14 @@ const resolvers = {
 const app = express();
 const httpServer = createServer(app);
 
-const schema = buildSubgraphSchema({ typeDefs, resolvers });
+const schema = buildSubgraphSchema({ typeDefs, resolvers } as any);
 const wsServer = new WebSocketServer({
   server: httpServer,
   path: "/ws",
 });
 const serverCleanup = useServer({ schema }, wsServer);
 
-const server = new ApolloServer({
+const server = new ApolloServer<ContextValue>({
   schema,
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -102,7 +106,7 @@ app.use(
     async context({ req }) {
       return {
         playerId: req.headers.player,
-      };
+      } as ContextValue;
     },
   })
 );

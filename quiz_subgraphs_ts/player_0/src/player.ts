@@ -12,9 +12,10 @@ import { useServer } from "graphql-ws/lib/use/ws";
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
 const { json } = bodyParser;
+import crypto from "crypto";
 
 function uuid() {
-  return Math.random().toString(36).substring(2, 9);
+  return crypto.randomBytes(6).toString("hex");
 }
 
 interface Player {
@@ -25,11 +26,11 @@ const pubsub = new PubSub();
 
 const PLAYERS: Record<string, Player> = {};
 
-const typeDefs = gql(readFileSync("./player.graphql", { encoding: "utf-8" }));
+const typeDefs = gql(readFileSync("./player.graphql", "utf-8"));
 
 const resolvers = {
   Query: {
-    test(_: any, { id }: { id: string }) {
+    test(_: undefined, { id }: { id: string }) {
       return "test";
     },
   },
