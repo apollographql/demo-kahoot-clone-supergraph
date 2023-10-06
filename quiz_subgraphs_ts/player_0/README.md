@@ -30,5 +30,5 @@ npm run build
 Run the following to watch for source changes:
 
 ```
-npm run watch
+npm run dev
 ```
