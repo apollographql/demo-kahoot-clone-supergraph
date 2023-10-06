@@ -64,7 +64,7 @@ type Mutation
   createPlayer(userName: String!, quizId: ID!): Player @join__field(graph: PLAYER)
 
   """For an user who answers to a question in a quiz"""
-  answer(quizId: ID!, choiceId: ID): Response! @join__field(graph: QUIZ)
+  answer(quizId: ID!, questionId: ID!, choiceId: ID): Response! @join__field(graph: QUIZ)
 
   """For admin to trigger the next question"""
   nextQuestion(quizId: ID!): Question @join__field(graph: QUIZ)
