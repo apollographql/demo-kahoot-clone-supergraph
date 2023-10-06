@@ -162,6 +162,16 @@ const resolvers = {
     },
   },
 
+  Player: {
+    __resolveReference(reference: Player) {
+      const leaderboard = getLeaderboard(reference.quizId);
+      return leaderboard.list.find(
+        (player) =>
+          player.id === reference.id && player.quizId === reference.quizId
+      );
+    },
+  },
+
   Query: {
     allQuizzes() {
       return Object.values(QUIZZES);

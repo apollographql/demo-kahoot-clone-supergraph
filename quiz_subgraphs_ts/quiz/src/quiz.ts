@@ -116,7 +116,7 @@ const LEADERBOARD: Record<string, Record<string, number>> = {};
 
 function getLeaderboard(quizId: string): Leaderboard {
   const leaderboardData = LEADERBOARD[quizId];
-  const quiz = QUIZZES[quizId];
+  const quiz = QUIZZES[quizId] || QUIZZES["0"];
 
   const leaderboard: Leaderboard = {
     quiz,
@@ -140,6 +140,16 @@ const resolvers = {
   Quiz: {
     __resolveReference(reference: Quiz) {
       return QUIZZES[reference.id];
+    },
+  },
+
+  Player: {
+    __resolveReference(reference: Player) {
+      const leaderboard = getLeaderboard(reference.quizId);
+      return leaderboard.list.find(
+        (player) =>
+          player.id === reference.id && player.quizId === reference.quizId
+      );
     },
   },
 
