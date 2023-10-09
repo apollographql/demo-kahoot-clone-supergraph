@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use async_graphql::{Context, Object, SimpleObject, Subscription, ID};
 use futures_util::{Stream, StreamExt};
+use serde::Deserialize;
 use tokio::sync::{
     broadcast::{self},
     RwLock,
@@ -13,6 +14,8 @@ pub(crate) struct InMemoryDb {
     // leaderboard by quiz id -> points by player_id
     leaderboard: RwLock<HashMap<ID, HashMap<ID, usize>>>,
 }
+
+const DATA_FILE: &str = include_str!("../data.json");
 
 impl InMemoryDb {
     pub(crate) async fn next_question(&self, quiz_id: &ID) -> Option<Question> {
@@ -326,16 +329,27 @@ pub(crate) struct Player {
     pub(crate) points: usize,
 }
 
-#[derive(Clone, Default, SimpleObject, Debug)]
+#[derive(Clone, SimpleObject, Debug, Deserialize)]
 pub(crate) struct Quiz {
     pub(crate) id: ID,
     pub(crate) title: String,
     pub(crate) questions: Vec<Question>,
-    #[graphql(skip)]
+    #[graphql(skip, default)]
     pub(crate) current_question: i8,
 }
 
-#[derive(SimpleObject, Clone, Debug)]
+impl Default for Quiz {
+    fn default() -> Self {
+        Self {
+            id: Default::default(),
+            title: Default::default(),
+            questions: Default::default(),
+            current_question: -1,
+        }
+    }
+}
+
+#[derive(SimpleObject, Clone, Debug, Deserialize)]
 pub(crate) struct Question {
     pub(crate) id: ID,
     pub(crate) title: String,
@@ -344,7 +358,7 @@ pub(crate) struct Question {
     pub(crate) good_answer: ID,
 }
 
-#[derive(Clone, Default, SimpleObject, Debug)]
+#[derive(Clone, Default, SimpleObject, Debug, Deserialize)]
 pub(crate) struct Choice {
     pub(crate) id: ID,
     pub(crate) text: String,
@@ -364,67 +378,13 @@ pub(crate) struct Response {
 
 impl Default for InMemoryDb {
     fn default() -> Self {
+        let quizzes: Vec<Quiz> = serde_json::from_str(DATA_FILE)
+            .expect("cannot deserialize the json file containing quizzes");
         Self {
-            quizzes: RwLock::new(
-                [(
-                    ID::from("0"),
-                    Quiz {
-                        id: ID::from("0"),
-                        title: String::from("Subscription quiz"),
-                        questions: vec![Question {
-                            id: ID::from("0"),
-                            title: String::from(
-                                "How many protocols are currently supported by the Apollo Router for subscriptions?",
-                            ),
-                            choices: vec![
-                                Choice {
-                                    id: ID::from("0"),
-                                    text: String::from("1"),
-                                },
-                                Choice {
-                                    id: ID::from("1"),
-                                    text: String::from("2"),
-                                },
-                                Choice {
-                                    id: ID::from("2"),
-                                    text: String::from("3"),
-                                },
-                                Choice {
-                                    id: ID::from("3"),
-                                    text: String::from("4"),
-                                },
-                            ],
-                            good_answer: ID::from("1"),
-                        }, Question {
-                            id: ID::from("1"),
-                            title: String::from(
-                                "In this Kahoot clone app, which protocol is used for the connection between the client and the router?",
-                            ),
-                            choices: vec![
-                                Choice {
-                                    id: ID::from("0"),
-                                    text: String::from("HTTP multipart connection"),
-                                },
-                                Choice {
-                                    id: ID::from("1"),
-                                    text: String::from("Server-side events (SSE)"),
-                                },
-                                Choice {
-                                    id: ID::from("2"),
-                                    text: String::from("WebSockets"),
-                                },
-                                Choice {
-                                    id: ID::from("3"),
-                                    text: String::from("Google Remote Procedure Call (gRPC)"),
-                                },
-                            ],
-                            good_answer: ID::from("0"),
-                        }],
-                        current_question: -1,
-                    },
-                )]
-                .into(),
-            ),
+            quizzes: RwLock::new(quizzes.into_iter().fold(HashMap::new(), |mut acc, quiz| {
+                acc.insert(quiz.id.clone(), quiz);
+                acc
+            })),
             leaderboard: Default::default(),
         }
     }
