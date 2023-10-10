@@ -1,0 +1,55 @@
+[
+    {
+        "id": "0",
+        "title": "Subscription quiz",
+        "questions": [
+            {
+                "id": "0",
+                "title": "How many different modes are available for subscription ?",
+                "choices": [
+                    {
+                        "id": "0",
+                        "text": "1"
+                    },
+                    {
+                        "id": "1",
+                        "text": "2"
+                    },
+                    {
+                        "id": "2",
+                        "text": "3"
+                    },
+                    {
+                        "id": "3",
+                        "text": "4"
+                    }
+                ],
+                "good_answer": "1"
+            },
+            {
+                "id": "1",
+                "title": "How is handled the subscription connection from the client to the Router ?",
+                "choices": [
+                    {
+                        "id": "0",
+                        "text": "Using HTTP multipart connection"
+                    },
+                    {
+                        "id": "1",
+                        "text": "Using SSE"
+                    },
+                    {
+                        "id": "2",
+                        "text": "Using WebSocket"
+                    },
+                    {
+                        "id": "3",
+                        "text": "Using GRPC"
+                    }
+                ],
+                "good_answer": "0"
+            }
+        ],
+        "current_question": -1
+    }
+]
