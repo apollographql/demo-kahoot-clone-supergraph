@@ -20,7 +20,7 @@ tower-service = "0.3"
 async-trait = "0.1.64"
 axum = { version = "0.6.4", default-features = false, features = ["headers"] }
 headers = "0.3.8"
-http = "0.2.8"
+http = "1.0.0"
 hyper = {version = "0.14", features = ["client"]}
 urlencoding = "2.1.2"
 serde_json = "1.0.66"
