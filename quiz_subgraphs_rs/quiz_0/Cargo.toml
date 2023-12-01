@@ -19,7 +19,7 @@ tower-http = { version = "0.3.5", features = ["compression-br", "compression-gzi
 tower-service = "0.3"
 async-trait = "0.1.64"
 axum = { version = "0.6.4", default-features = false, features = ["headers"] }
-headers = "0.3.8"
+headers = "0.4.0"
 http = "0.2.8"
 hyper = {version = "0.14", features = ["client"]}
 urlencoding = "2.1.2"
